@@ -21,55 +21,53 @@ static void queue_free(queue_node_t *queue)
 /**
  * queue_add - Adds a node to the queue.
  *
- * @back: Pointer to the last node in the queue.
+ * @front: Pointer to the first queue node.
+ * @back: Pointer to the last queue node.
  * @tree: Pointer to the tree node.
  *
- * Return: New queue node, or NULL on failure.
+ * Return: 0 on success, 1 on failure.
  */
-static queue_node_t *queue_add(queue_node_t **back,
+static int queue_add(queue_node_t **front, queue_node_t **back,
 		const binary_tree_t *tree)
 {
 	queue_node_t *new_node;
 
 	new_node = malloc(sizeof(queue_node_t));
 	if (!new_node)
-		return (NULL);
+		return (1);
 
 	new_node->tree = tree;
 	new_node->next = NULL;
 
 	if (*back)
 		(*back)->next = new_node;
+	else
+		*front = new_node;
 
 	*back = new_node;
-	return (new_node);
+
+	return (0);
 }
 
 /**
  * queue_children - Adds the children of a node to the queue.
  *
- * @node: Current queue node.
+ * @node: Current tree node.
+ * @front: Pointer to the first queue node.
  * @back: Pointer to the last queue node.
  *
  * Return: 0 on success, 1 on failure.
  */
-static int queue_children(queue_node_t *node, queue_node_t **back)
+static int queue_children(const binary_tree_t *node,
+		queue_node_t **front, queue_node_t **back)
 {
-	queue_node_t *new_node;
+	if (node->left &&
+		queue_add(front, back, node->left))
+		return (1);
 
-	if (node->tree->left)
-	{
-		new_node = queue_add(back, node->tree->left);
-		if (!new_node)
-			return (1);
-	}
-
-	if (node->tree->right)
-	{
-		new_node = queue_add(back, node->tree->right);
-		if (!new_node)
-			return (1);
-	}
+	if (node->right &&
+		queue_add(front, back, node->right))
+		return (1);
 
 	return (0);
 }
@@ -87,8 +85,11 @@ void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 	if (!tree || !func)
 		return;
 
+	front = NULL;
 	back = NULL;
-	front = queue_add(&back, tree);
+
+	if (queue_add(&front, &back, tree))
+		return;
 
 	while (front)
 	{
@@ -97,14 +98,14 @@ void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 
 		func(current->tree->n);
 
-		if (queue_children(current, &back))
+		if (queue_children(current->tree, &front, &back))
 		{
 			free(current);
 			queue_free(front);
 			return;
 		}
 
-		if (current == back)
+		if (!front)
 			back = NULL;
 
 		free(current);
