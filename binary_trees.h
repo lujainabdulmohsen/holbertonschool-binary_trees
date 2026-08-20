@@ -66,4 +66,6 @@ typedef struct queue_node_s queue_node_t;
 
 void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int));
 
+int binary_tree_is_complete(const binary_tree_t *tree);
+
 #endif
