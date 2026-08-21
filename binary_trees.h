@@ -107,4 +107,6 @@ void binary_tree_print(const binary_tree_t *tree);
 
 avl_t *sorted_array_to_avl(int *array, size_t size);
 
+int binary_tree_is_heap(const binary_tree_t *tree);
+
 #endif
