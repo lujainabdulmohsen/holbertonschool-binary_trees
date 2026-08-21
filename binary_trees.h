@@ -13,6 +13,16 @@ struct binary_tree_s
 
 typedef struct binary_tree_s binary_tree_t;
 
+/**
+ * struct binary_tree_s - Binary tree node
+ *
+ * @n: Integer stored in the node
+ * @parent: Pointer to the parent node
+ * @left: Pointer to the left child
+ * @right: Pointer to the right child
+ */
+typedef struct binary_tree_s avl_t;
+
 typedef struct binary_tree_s bst_t;
 
 binary_tree_t *binary_tree_node(binary_tree_t *parent, int value);
@@ -85,5 +95,7 @@ bst_t *bst_search(const bst_t *tree, int value);
 bst_t *bst_remove(bst_t *root, int value);
 
 int binary_tree_is_avl(const binary_tree_t *tree);
+
+avl_t *avl_insert(avl_t **tree, int value);
 
 #endif
