@@ -2,7 +2,7 @@
 #include "binary_trees.h"
 
 /**
- * heap_size - Counts the nodes in a binary heap
+ * heap_size - Counts the number of nodes in a heap
  * @tree: Pointer to the root node
  *
  * Return: Number of nodes
@@ -16,42 +16,43 @@ static size_t heap_size(const heap_t *tree)
 }
 
 /**
- * heap_parent - Finds the parent of the next node
- * @root: Pointer to the root
- * @index: Index of the new node
+ * heap_get_node - Gets a node using its heap index
+ * @root: Pointer to the root node
+ * @index: Index of the node
  *
- * Return: Pointer to the parent node
+ * Return: Pointer to the node
  */
-static heap_t *heap_parent(heap_t *root, size_t index)
+static heap_t *heap_get_node(heap_t *root, size_t index)
 {
 	size_t bit;
-	heap_t *parent;
+	heap_t *node;
 
-	parent = root;
+	node = root;
 	bit = 1;
 
-	while (bit <= index / 2)
+	while (bit <= index)
 		bit <<= 1;
 
 	bit >>= 2;
 
-	while (bit != 0)
+	while (bit != 0 && node != NULL)
 	{
 		if (index & bit)
-			parent = parent->right;
+			node = node->right;
 		else
-			parent = parent->left;
+			node = node->left;
+
 		bit >>= 1;
 	}
 
-	return (parent);
+	return (node);
 }
 
 /**
  * heap_bubble_up - Restores the Max Heap property
  * @node: Pointer to the inserted node
  *
- * Return: Pointer to the final position of the inserted node
+ * Return: Pointer to the node
  */
 static heap_t *heap_bubble_up(heap_t *node)
 {
@@ -74,7 +75,7 @@ static heap_t *heap_bubble_up(heap_t *node)
 
 /**
  * heap_insert - Inserts a value in a Max Binary Heap
- * @root: Double pointer to the root of the heap
+ * @root: Double pointer to the root
  * @value: Value to insert
  *
  * Return: Pointer to the created node, or NULL on failure
@@ -99,14 +100,14 @@ heap_t *heap_insert(heap_t **root, int value)
 	}
 
 	index = heap_size(*root) + 1;
-	parent = heap_parent(*root, index);
+	parent = heap_get_node(*root, index / 2);
 
-	node->parent = parent;
-
-	if ((index & 1) == 0)
+	if (index % 2 == 0)
 		parent->left = node;
 	else
 		parent->right = node;
+
+	node->parent = parent;
 
 	return (heap_bubble_up(node));
 }
